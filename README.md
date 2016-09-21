@@ -1,6 +1,6 @@
 # Guidelines
 
-- [Nodejs](blob/master/nodejs.md)
-- [Naming Conventions](blob/master/naming.md)
-- [Service Architecture](blob/master/service-architecture.md)
-- [API Guide](blob/master/api.md)
+- [Nodejs](nodejs.md)
+- [Naming Conventions](naming.md)
+- [Service Architecture](service-architecture.md)
+- [API Guide](api.md)

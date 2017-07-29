@@ -1,8 +1,9 @@
-[🏠](README.md) › [Node.js](nodejs.md) › Design patterns & best practices
+[🏠](README.md) › Node.js Design patterns & best practices
 
 
 # Design patterns
 
+- [Principals](#principals)
 - [Modules](#modules)
 - [Revealing module pattern](#revealing-module-pattern)
 - [Prefer ES6](#prefer-es6)
@@ -10,30 +11,37 @@
 - [Promises for async control flow](#promises-for-async-control-flow)
 
 
+## Principals
+
+We adhere to the following principals:
+
+- less code means less bugs
+- high cohesion low coupling
+
+
 ## Modules  
 - Modules are cheap, they can never be too small but they can be too large.  
 - Modules should be highly cohesive and decoupled. They should do one thing and do it well.  
 - Leverage npm as the largest package management system; don't try and compete with OSS where a package has real world usage in the wild and community contributions.
+- Dependencies can increase deployment time, so limit them where possible.
+- Prefer es6 and later versions of Node over dependencies.  
 - The boundaries of responsibility for each module should be informed by the underlying domain (business rules), and not from a developer centric perspective such as MVC.
-- Business rules should be isolated from their dependencies (see Dependency Injection) and framework specific conventions (See Imperative Shell, Functional Core)
-- Never require individual files from within a module. This violates the [Principle of Least Knowledge](https://en.wikipedia.org/wiki/Law_of_Demeter).
+- Implementation should be isolated from dependencies through Dependency Injection using [Imperative Shell, Functional Core](nodejs-testing.md#imperative-shell-functional-core) paradigm.  
+- Avoid requiring individual files from within a module. This violates the [Principle of Least Knowledge](https://en.wikipedia.org/wiki/Law_of_Demeter).
 
 ### Bad
 The `.js` extension in the require statement is a code smell.
 
 ```javascript
-const giraffe = require('animals/giraffe.js');
-giraffe.create();
-...
+const bambi = require('animals/deer.js').create();
 ```
 
 ### Best
 The animals module exposes an API with the giraffe property.
 
 ```javascript
-const { giraffe } = require('animals');
-giraffe.create();
-...
+const { deer } = require('animals');
+const bambi = deer.create();
 ```
 
 - Keep function signatures flexible; once you have more than 2 or 3 arguments use a configuration object instead.
@@ -43,7 +51,6 @@ This function signature is rigid and will be hard to refactor.
 
 ```javascript
 const clients = require(gender, age, location, height);
-...
 ```
 
 ### Best
@@ -51,7 +58,6 @@ Using the es6 object literal shorthand, we can provide a lightweight flexible ob
 
 ```javascript
 const clients = require({ gender, age, location, height });
-...
 ```
 
 **Additional reading**  
@@ -70,42 +76,20 @@ Adds cognitive overhead by requiring you to scroll through the business logic to
 ```javascript
 
 const Obj = {
-  maybeCacheList(){
-    ....
-  }
-  ...
+  foo(){}
+  bah(){}
 }
-
 return Obj;
-```
-
-### Good
-Returning an object literal, but the es5 syntax is getting in the way of readability.  
-
-```javascript
-
-const cacheListInDevelopment = () => ...
-
-return {
-  maybeCacheList: cacheListInDevelopment,
-  maybeLogCycleData: LogCycleDataInDevelopment,
-  writeDomainsList: writeDomainsList,
-  ...
-};
 ```
 
 ### Best
 Take advantage of ES6 object property shorthand by keeping the naming of your functions consistent with your API naming convention.
 
 ```javascript
-
-const maybeCacheList = () => ...
-
+const foo = () => {}
+// api
 return {
-  maybeCacheList,
-  maybeLogCycleData,
-  writeDomainsList,
-  ...
+  foo,
 };
 ```
 
@@ -198,6 +182,7 @@ module.exports = function(options){
 - Avoid using "this". Javascript allows functions/methods to be invoked with dynamic context using `apply` and `call`. Likewise avoid new as it is problematic, prefer to create new objects through concatenation and factory functions.
 
 ### Unadorned data  
+- Keep data in its most primitive format: arrays, numbers, strings etc. Do not adorn data with special methods for mutating i.e. sequalize models.
 
 ### Recursion > looping  
 - `for in` and `for each` loops should be avoided in favor of higher order functions `map`, `reduce` and `filter`.
@@ -211,8 +196,35 @@ module.exports = function(options){
 - Promises have been widely adopted in the javascript community and are preferable to the verbose error handling of callbacks.  
 - Keep implementation outside of promise chains.
 - A promise chain should be higher level, sequential control flow of named functions. Keep it declarative, describe what is happening but not how it happens (implementation).
+- flatten exported promise chain where possible or reduce promise chains in promise handlers.
 
-### Bad
+
+### Unnecessary enveloping
+- Remove unnecessary enveloping (don't return an object with single key, move key to value that is returned)
+
+## good
+```javascript
+const process = data =>
+  createCmd(data)
+    .then(maybeAppendInputRecords)
+    .then(execScud)
+    .then(parseResult);
+
+return {
+  process,
+};
+```
+
+# best
+- less indirection
+```javascript
+return data => createCmd(data)
+  .then(maybeAppendInputRecords)
+  .then(execScud)
+  .then(parseResult);
+```
+
+#### Bad
 Promise chain interrupted with implementation details
 
 ```javascript
@@ -228,7 +240,7 @@ maybeCacheList(request.params.list)
   .then(writeDomainsList)
 ```
 
-### Best
+#### Best
 Promise chain of sequential named functions
 
 ```javascript
@@ -238,7 +250,8 @@ maybeCacheList(request.params.list)
   ...
 ```
 
-- Promise chains are less useful for complex branching. Here are two ways to handle basic forms of branching:
+### Complex branching  
+Promise chains are less useful for complex branching. Here are two ways to handle basic forms of branching:
 
 **1. Split into two chains based on ternary evaluation**  
 ```javascript
@@ -262,4 +275,38 @@ maybeFecthData()
   .then(maybeProcessMineUpdate)
   .then(flattenData)
   .then(setEnvironment);
+```
+
+### If using promises, have all implementation within promises.  
+Place all implementation within promises for a single point of failure.  
+
+#### Bad
+Expression performed outside of promise, will not be handled by catch handler.  
+
+```javascript
+const myFn = () =>
+  // if this line throws an error may terminate program & not handled by catch
+  const secrets = JSON.parse(decrypt({ str, password }));
+  return new Promise((resolve, reject) => {
+    /* perform operation with secrets */
+  })
+  .catch(console.error);
+```
+
+#### Best
+Abstract expression within a promise to be handled by catch handler.
+
+```javascript
+const getSecrets = str => new Promise((resolve, reject) => {
+  try {
+    resolve(JSON.parse(decrypt({ str, password })));
+  } catch (e) {
+    reject(e);
+  }
+});
+
+const myFn = () =>
+  getSecrets(key)
+    .then(secrets => /* perform operation with secrets */ )
+    .catch(console.error)
 ```

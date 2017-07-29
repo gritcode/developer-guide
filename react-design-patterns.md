@@ -1,4 +1,4 @@
-[🏠](README.md) › React
+[🏠](README.md) › React Design patterns & best practices
 
 
 # React

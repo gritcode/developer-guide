@@ -214,8 +214,8 @@ test('returns promise', t => {
 
 ### Integration
 
-#### ses
-- To tests ses, have your module send emails to `tap@optizmo.grit.run`. Modifying such a value at runtime could be done either as input (i.e. http request payload) or as an environment variable.  
+#### SES
+- To test a modules integration with the AWS SES, have your module send emails to `tap@optizmo.grit.run`. Modifying such a value at runtime could be done either as input (i.e. http request payload) or as an environment variable.  
 - Behind the scenes the sandbox account has an associated ses rule, s3 bucket, sns topic & sqs queue already provisioned for capturing emails sent to the tap recipient.
 - The functionality to read mail headers is encapsulated behind `tests.createPollMail` & `tests.createMailHeader`.
 

@@ -19,10 +19,9 @@
 
 
 ## Conventions
-The purpose of adhering to conventions is to ensure testable _modules_ & relevant, maintainable _tests_. Modules live within `/lib`, tests in `test` directory.
+The purpose of adhering to conventions is to ensure testable _modules_ & relevant, maintainable _tests_. Modules live within `/lib`; tests in the `/test` directory.
 
 ### Tests
-
 - Test first or test later - as long as we have tests before submitting code for review.  
 - There is a hard separation between tests and the modules they are testing; no code within a module should exist for testing purposes. Tests are for modules, not modules for tests.
 - Prefer a single assertion per test, not many assertions for a single test. This will make it easier to read failing tests. If there is many assertions, each assertion should either test the same variable, properties of the same variable object, or different variables that are in some way related.  
@@ -96,7 +95,6 @@ AWS Modules endpoints implement the imperative shell, functional core with a sli
 
 
 ## Usage
-
 - Automated tests are run in two environments: by the Gitlab CI server and should be run locally while developing.
 - Both use command `npm test`, while `npm run watch` can be used in local development for automatically running unit tests on file changes.
 - `npm test` uses sandbox account specific env vars found in the version controlled .env.default file.
@@ -129,7 +127,6 @@ integration:
 
 
 ## Test Types
-
 - Unit tests are scoped to a single unit and use simple test doubles (shallow stubs) for dependencies.
 - Integration tests are scoped to combinations of units and their dependencies.
 

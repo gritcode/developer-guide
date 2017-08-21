@@ -84,16 +84,13 @@ A container does data fetching and then renders its corresponding sub-component.
 
 StockWidgetContainer => StockWidget
 
-
-
-
-have performance optimizations
+Performance optimizations:  
 - No internal state
 - No backing instances (React.component just a React.Element)
 - No component lifecycle methods
 - propTypes + defaultProps can be set as properties of the function
 
-**further reading**  
+**Further Reading**  
 - [Reusable Components](https://facebook.github.io/react/docs/reusable-components.html)
 - [Presentational and Container Components](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0)
 - [](https://medium.com/@learnreact/container-components-c0e67432e005#.grklqyxu6)
@@ -130,7 +127,7 @@ const App = Container(Presenter);
 
 ### Performance Considerations  
 
-**Further reading**  
+**Further Reading**  
 (https://medium.com/modus-create-front-end-development/component-rendering-performance-in-react-df859b474adc#.h7bg24bfy)
 
 ## Development practices

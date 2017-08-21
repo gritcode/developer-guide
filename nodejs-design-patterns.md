@@ -9,14 +9,27 @@
 - [Prefer ES6](#prefer-es6)
 - [Prefer functional over classical](#prefer-functional-over-classical)
 - [Promises for async control flow](#promises-for-async-control-flow)
+- [Debugging](debugging)
 
 
-## Principals
+## Principals  
+General programming principals apply for writing modern, functional-esque Node.js code:  
 
-We adhere to the following principals:
+- **Single responsibility**. Otherwise known as do one thing and do it well, it keeps functions composable & testable.Functions maybe doing too much if it is hard to name or it has too many dependencies or arguments.  
+- **Optimise for reading not writing**. Good code should be self-documenting as opposed to relying too heavily on commenting (which can go stale).  
+- **Less code means less bugs**. Common patterns are abstracted to [resources/utils](https://gitlab.grit.work/resources/utils).  
+- **High cohesion low coupling**. Abstractions should be informed by the cohesiveness of the code and to reduce coupling.  
+- **Avoid unnecessary dependencies**. Prefer simple functional utilities when sufficient.  
+- **Late optizimation**. Don't anticipate future modifications/additions with abstractions; prefer comments to revisit code.  
 
-- less code means less bugs
-- high cohesion low coupling
+### Colocation
+Prefer colocating (inline code) over indirection when it does not make the code anymore DRY. Colocate:
+  - Variable assignment with usage.  
+  - function declaration (keeping in outer most scope) with usage (Don't split implementation across modules).  
+
+**Further Reading**  
+- [Straight-line code over functions - FunFunFunction ](https://www.youtube.com/watch?v=Bks59AaHe1c)
+- [React core developers on colocation; unit tests colocated with source ](https://twitter.com/dan_abramov/status/762658867327172608?lang=en)
 
 
 ## Modules  
@@ -25,7 +38,7 @@ We adhere to the following principals:
 - Leverage npm as the largest package management system; don't try and compete with OSS where a package has real world usage in the wild and community contributions.
 - Dependencies can increase deployment time, so limit them where possible.
 - Prefer es6 and later versions of Node over dependencies.  
-- The boundaries of responsibility for each module should be informed by the underlying domain (business rules), and not from a developer centric perspective such as MVC.
+- Seperate modules by features: The boundaries of responsibility for each module should be informed by the underlying domain (business rules), and not from a developer centric perspective such as MVC.
 - Implementation should be isolated from dependencies through Dependency Injection using [Imperative Shell, Functional Core](nodejs-testing.md#imperative-shell-functional-core) paradigm.  
 - Avoid requiring individual files from within a module. This violates the [Principle of Least Knowledge](https://en.wikipedia.org/wiki/Law_of_Demeter).
 
@@ -93,7 +106,7 @@ return {
 };
 ```
 
-**Further reading**
+**Further Reading**
 - [Essential Javascript Design Patterns](https://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript)
 
 
@@ -310,3 +323,16 @@ const myFn = () =>
     .then(secrets => /* perform operation with secrets */ )
     .catch(console.error)
 ```
+
+## Linting and Debugging
+- Gritcode has a sharable eslint configuration on github.com [module-eslint-config-gritcode](https://github.com/gritcode/module-eslint-config-gritcode).  
+- Prefer rawkit over `node --inspect`, copies chrome url // alias
+colocate channel & username constants. Prefer env vars to locating values likely to change at runtime at top of files and avoid indirection if it doesn't meet one of these conditions:  
+    1. Readability of being able to put a config object on a single line.  
+    2. Keeping code dry for values used more than once.  
+    3. Deconstructing assignment or constant assignments from global objects i.e. process.env
+
+
+### Resources
+
+- [rawkit](https://www.npmjs.com/package/rawkit)

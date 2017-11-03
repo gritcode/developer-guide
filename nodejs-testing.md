@@ -28,7 +28,7 @@ The purpose of adhering to conventions is to ensure testable _modules_ & relevan
 - Keep the name of the test as a descriptive summary of the assertions being performed and ensure you only describe what is actually being tested.  
 
 **Directory structure**  
-```
+```bash
 └── test  
     ├── fixture (optional)  
     ├── integration  
@@ -127,6 +127,7 @@ integration:
 
 
 ## Test Types
+
 - Unit tests are scoped to a single unit and use simple test doubles (shallow stubs) for dependencies.
 - Integration tests are scoped to combinations of units and their dependencies.
 
@@ -149,6 +150,9 @@ integration:
   - Each environment (sandbox, develop & master) have the same services provisioned (Should be handled by deployer).
 - See [Common test cases](#ses) for examples how to test aws services in integration tests.  
 - Avoid using test doubles; prefer real working implementations so we can inspect AWS services are working as expected where possible.
+
+**Additional Reading**
+[Write tests. Not too many. Mostly integration.](https://blog.kentcdodds.com/write-tests-not-too-many-mostly-integration-5e8c7fff591c)
 
 
 ## Test framework  

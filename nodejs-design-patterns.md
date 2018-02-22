@@ -36,11 +36,13 @@ Prefer colocating (inline code) over indirection when it does not make the code 
 - Modules are cheap, they can never be too small but they can be too large.  
 - Modules should be highly cohesive and decoupled. They should do one thing and do it well.  
 - Leverage npm as the largest package management system; don't try and compete with OSS where a package has real world usage in the wild and community contributions.
-- Dependencies can increase deployment time, so limit them where possible.
+- Dependencies can increase deployment time, so limit them where possible, or only install dependencies that are stand alone packages that do not introduce [transitive dependencies](http://blog.npmjs.org/post/145724408060/dealing-with-problematic-dependencies-in-a).
 - Prefer es6 and later versions of Node over dependencies.  
 - Seperate modules by features: The boundaries of responsibility for each module should be informed by the underlying domain (business rules), and not from a developer centric perspective such as MVC.
 - Implementation should be isolated from dependencies through Dependency Injection using [Imperative Shell, Functional Core](nodejs-testing.md#imperative-shell-functional-core) paradigm.  
 - Avoid requiring individual files from within a module. This violates the [Principle of Least Knowledge](https://en.wikipedia.org/wiki/Law_of_Demeter).
+- Structure modules into sections where possible: constants, utility functions, promise handlers, api.
+- Sort arguments alphabetically, declare functions in their order within promise chain.
 
 ### Bad
 The `.js` extension in the require statement is a code smell.
@@ -207,10 +209,28 @@ module.exports = function(options){
 
 ## Promises for async control flow
 - Promises have been widely adopted in the javascript community and are preferable to the verbose error handling of callbacks.  
-- Keep implementation outside of promise chains.
+- Prefer to keep implementation outside of long promise chains.
 - A promise chain should be higher level, sequential control flow of named functions. Keep it declarative, describe what is happening but not how it happens (implementation).
 - flatten exported promise chain where possible or reduce promise chains in promise handlers.
 
+
+### Referentially transparent
+- Promise handlers should be referentially transparent.
+- Return a copy of the input data it receives (will often be a state object).  
+
+```javascript
+// objects
+// add items to object
+deepmerge(data, { newKey: 'newValue' });
+// remove top level property from object
+Object.keys(data).reduce((acc, key) =>
+  (key === 'removeMe') ? removeKeys(acc, [key]), data) : data);
+// arrays
+// remove/mutate items in array
+deepmerge(data, { arr: data.arr.filter() }, dontMergeArrays);
+// add items to array
+deepmerge(data, { arr: ['newItem'] });
+```
 
 ### Unnecessary enveloping
 - Remove unnecessary enveloping (don't return an object with single key, move key to value that is returned)

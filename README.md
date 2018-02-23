@@ -1,5 +1,4 @@
-# Guidelines
-These Guides are currently private until we scrub business specific references.  
+# 📖 Guidelines
 
 #### Node.js
 - [Design patterns & best practices](nodejs-design-patterns.md)

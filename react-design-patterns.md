@@ -56,14 +56,14 @@ MyComponent.propTypes = { foo: React.PropTypes.string };
 
 **Simplified component separation**
 
-   | Presentational |  Container
+&nbsp; | Presentational |  Container
 ---|---|--
 State | N |  Y
 Lifecycle methods   | N | Y
 this keyword | N | Y
 Renders | Y | N
 Fetches data | N | Y
-Naming convention | component_name | container_component_name
+Naming convention | componentName | containerComponentName
 
 Separating presentational from container components enables:  
   1. Reusability  
@@ -168,10 +168,6 @@ const App = Container(Presenter);
 ### Structure
 
 - [Group components by feature not type](https://vimeo.com/168648012)
--
-
-
-
 
 
 
